@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../../context/useCart'
 import { useAuth } from '../../context/useAuth'
@@ -9,7 +9,7 @@ import './Checkout.css'
 function Checkout() {
   const navigate = useNavigate()
   const { cartItems, cartSubtotal, clearCart } = useCart()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, currentUser } = useAuth()
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -24,8 +24,19 @@ function Checkout() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [orderSuccess, setOrderSuccess] = useState(null)
 
+  // Prefill name + phone from account (collected at registration)
+  useEffect(() => {
+    if (!currentUser) return
+    setFormData((prev) => ({
+      ...prev,
+      fullName: prev.fullName || currentUser.name || '',
+      phone: prev.phone || currentUser.phone || '',
+    }))
+  }, [currentUser])
+
   const deliveryFee = calculateDeliveryFee(formData.town)
   const total = cartSubtotal + deliveryFee
+  const hasAccountDetails = Boolean(isAuthenticated && currentUser)
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -80,9 +91,7 @@ function Checkout() {
         shipping_name: formData.fullName.trim(),
         shipping_phone: formData.phone.trim(),
         shipping_address: shippingAddress,
-        notes: mpesaPhone
-          ? `M-Pesa phone: ${mpesaPhone}. Delivery fee: ${deliveryFee}`
-          : `Delivery fee: ${deliveryFee}`,
+        notes: `Delivery: ${formData.town.trim()}, ${formData.county.trim()}. Fee KSh ${deliveryFee}`,
       })
 
       clearCart()
@@ -101,8 +110,8 @@ function Checkout() {
           <h1>Order placed</h1>
           <p>
             Thank you. Your order #{orderSuccess.id} was received and is{' '}
-            <strong>{orderSuccess.status}</strong>. You do not need to pay
-            online yet — we will follow up about delivery and payment.
+            <strong>{orderSuccess.status}</strong>. You do not need to pay online
+            yet — we will follow up about delivery and payment.
           </p>
           <p>
             Total: KSh {Number(orderSuccess.total_amount).toLocaleString()}
@@ -135,7 +144,11 @@ function Checkout() {
         <div className="checkout__header">
           <span>Almost There</span>
           <h1>Checkout</h1>
-          <p>Tell us where you&apos;d like your honey delivered.</p>
+          <p>
+            {hasAccountDetails
+              ? 'We filled in your account details — just add where to deliver.'
+              : "Tell us where you'd like your honey delivered."}
+          </p>
         </div>
 
         <form className="checkout__content" onSubmit={handleSubmit}>
@@ -147,6 +160,15 @@ function Checkout() {
                   {submitError}
                 </p>
               )}
+
+              {hasAccountDetails && (
+                <p className="checkout__account-note">
+                  Signed in as <strong>{currentUser.email}</strong>. Name and
+                  phone come from your account
+                  {currentUser.phone ? '' : ' (add a phone if missing)'}.
+                </p>
+              )}
+
               <div className="checkout__fields">
                 <div className="checkout__field">
                   <label htmlFor="fullName">Full name</label>
@@ -156,20 +178,34 @@ function Checkout() {
                     type="text"
                     value={formData.fullName}
                     onChange={handleChange}
+                    readOnly={hasAccountDetails && Boolean(currentUser?.name)}
+                    className={
+                      hasAccountDetails && currentUser?.name
+                        ? 'checkout__input--filled'
+                        : undefined
+                    }
                     placeholder="Your full name"
+                    autoComplete="name"
                   />
                   {errors.fullName && <small>{errors.fullName}</small>}
                 </div>
 
                 <div className="checkout__field">
-                  <label htmlFor="phone">Phone</label>
+                  <label htmlFor="phone">Phone number</label>
                   <input
                     id="phone"
                     name="phone"
                     type="tel"
                     value={formData.phone}
                     onChange={handleChange}
+                    readOnly={hasAccountDetails && Boolean(currentUser?.phone)}
+                    className={
+                      hasAccountDetails && currentUser?.phone
+                        ? 'checkout__input--filled'
+                        : undefined
+                    }
                     placeholder="07XX XXX XXX"
+                    autoComplete="tel"
                   />
                   {errors.phone && <small>{errors.phone}</small>}
                 </div>
@@ -183,6 +219,7 @@ function Checkout() {
                     value={formData.county}
                     onChange={handleChange}
                     placeholder="e.g. Nairobi"
+                    autoComplete="address-level1"
                   />
                   {errors.county && <small>{errors.county}</small>}
                 </div>
@@ -196,6 +233,7 @@ function Checkout() {
                     value={formData.town}
                     onChange={handleChange}
                     placeholder="e.g. Westlands"
+                    autoComplete="address-level2"
                   />
                   {errors.town && <small>{errors.town}</small>}
                 </div>
@@ -207,8 +245,9 @@ function Checkout() {
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
-                    placeholder="Enter your delivery address"
+                    placeholder="Street, building, landmark…"
                     rows="4"
+                    autoComplete="street-address"
                   />
                   {errors.address && <small>{errors.address}</small>}
                 </div>
@@ -217,8 +256,8 @@ function Checkout() {
               <div className="checkout__pay-later">
                 <p>
                   <strong>No payment required now.</strong> Place your order and
-                  we will confirm delivery and payment details with you (including
-                  M-Pesa when available).
+                  we will confirm delivery and payment details with you
+                  (including M-Pesa when available).
                 </p>
               </div>
 
@@ -241,11 +280,13 @@ function Checkout() {
                     <div>
                       <strong>{item.name}</strong>
                       <span>
-                        {item.quantity} × KSh {Number(item.price).toLocaleString()}
+                        {item.quantity} × KSh{' '}
+                        {Number(item.price).toLocaleString()}
                       </span>
                     </div>
                     <strong>
-                      KSh {(Number(item.price) * item.quantity).toLocaleString()}
+                      KSh{' '}
+                      {(Number(item.price) * item.quantity).toLocaleString()}
                     </strong>
                   </div>
                 ))}
