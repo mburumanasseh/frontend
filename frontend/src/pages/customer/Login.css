@@ -167,3 +167,37 @@
     align-items: center;
   }
 }
+
+
+.login-page__password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-page__password-wrap input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.85rem 2.75rem 0.85rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.login-page__password-toggle {
+  position: absolute;
+  right: 0.35rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0.4rem 0.55rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+}
+
+.login-page__password-toggle:hover {
+  color: var(--color-primary);
+}

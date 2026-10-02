@@ -15,6 +15,8 @@ function Register() {
     confirmPassword: '',
   })
 
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -165,15 +167,26 @@ function Register() {
               Password
             </label>
 
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="At least 6 characters"
-              autoComplete="new-password"
-            />
+            <div className="register-page__password-wrap">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="At least 6 characters"
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                className="register-page__password-toggle"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                title={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? '🙈' : '👁'}
+              </button>
+            </div>
           </div>
 
           <div className="register-page__field">
@@ -181,15 +194,26 @@ function Register() {
               Confirm Password
             </label>
 
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Enter your password again"
-              autoComplete="new-password"
-            />
+            <div className="register-page__password-wrap">
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Enter your password again"
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                className="register-page__password-toggle"
+                onClick={() => setShowConfirmPassword((v) => !v)}
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                title={showConfirmPassword ? 'Hide password' : 'Show password'}
+              >
+                {showConfirmPassword ? '🙈' : '👁'}
+              </button>
+            </div>
           </div>
 
           <button

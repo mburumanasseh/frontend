@@ -278,3 +278,21 @@
   font-size: 0.95rem;
   line-height: 1.45;
 }
+
+
+.checkout__account-note {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: #f7f3e8;
+  border: 1px solid #e5d9b8;
+  color: #5c4a1f;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.checkout__input--filled {
+  background: #f5f5f5;
+  color: #333;
+  cursor: default;
+}
