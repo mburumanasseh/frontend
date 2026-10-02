@@ -200,3 +200,15 @@ Uses in-memory SQLite; no Docker required for tests.
 
 - Frontend: [../frontend](../frontend)  
 - Monorepo root: [../README.md](../README.md)
+
+
+## Seed first admin user
+
+```bash
+export SEED_ADMIN_EMAIL=you@example.com
+export SEED_ADMIN_PASSWORD='your-secure-password'
+export SEED_ADMIN_NAME='Your Name'
+python seed_admin_user.py
+```
+
+Or register via `POST /api/v1/auth/register`, then promote with `POST /api/v1/auth/bootstrap-admin` using `BOOTSTRAP_SECRET`.
