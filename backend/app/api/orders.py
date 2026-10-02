@@ -24,14 +24,33 @@ def create_order(
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_active_user)],
 ):
+    """
+    Create an order atomically.
+
+    Product rows are locked with SELECT FOR UPDATE so concurrent checkouts
+    cannot oversell the same stock units.
+    """
     if not payload.items:
         raise HTTPException(status_code=400, detail="Order must contain at least one item")
+
+    # Lock products in a stable order to reduce deadlock risk
+    product_ids = sorted({item.product_id for item in payload.items})
+    locked_products = {
+        p.id: p
+        for p in (
+            db.query(Product)
+            .filter(Product.id.in_(product_ids))
+            .order_by(Product.id)
+            .with_for_update()
+            .all()
+        )
+    }
 
     order_items: list[OrderItem] = []
     total = Decimal("0.00")
 
     for item in payload.items:
-        product = db.get(Product, item.product_id)
+        product = locked_products.get(item.product_id)
         if product is None or not product.is_active:
             raise HTTPException(
                 status_code=400,
@@ -40,7 +59,10 @@ def create_order(
         if product.stock < item.quantity:
             raise HTTPException(
                 status_code=400,
-                detail=f"Insufficient stock for '{product.name}'. Available: {product.stock}",
+                detail=(
+                    f"Insufficient stock for '{product.name}'. "
+                    f"Available: {product.stock}"
+                ),
             )
 
         line_total = (product.price * item.quantity).quantize(Decimal("0.01"))
@@ -68,7 +90,11 @@ def create_order(
         items=order_items,
     )
     db.add(order)
-    db.commit()
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
 
     created = _order_query(db).filter(Order.id == order.id).first()
     return created
@@ -89,7 +115,7 @@ def list_my_orders(
 
 
 @router.get("/orders/{order_id}", response_model=OrderResponse)
-def get_my_order(
+def get_order(
     order_id: int,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_active_user)],

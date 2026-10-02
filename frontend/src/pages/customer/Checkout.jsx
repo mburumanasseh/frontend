@@ -8,7 +8,7 @@ import './Checkout.css'
 
 function Checkout() {
   const navigate = useNavigate()
-  const { cartItems, cartSubtotal, clearCart } = useCart()
+  const { cartItems, cartSubtotal, clearCart, refreshCartFromServer } = useCart()
   const { isAuthenticated, currentUser } = useAuth()
 
   const [formData, setFormData] = useState({
@@ -75,6 +75,21 @@ function Checkout() {
 
     setIsSubmitting(true)
     try {
+      // Refresh price/stock right before placing the order
+      const sync = await refreshCartFromServer()
+      if (sync?.removed?.length) {
+        setSubmitError(
+          'Some items are no longer available and were removed from your cart. Please review and try again.',
+        )
+        setIsSubmitting(false)
+        return
+      }
+      if (sync?.items !== undefined && sync.items.length === 0) {
+        setSubmitError('Your cart is empty after updating stock. Please add products again.')
+        setIsSubmitting(false)
+        return
+      }
+
       const shippingAddress = [
         formData.address.trim(),
         formData.town.trim(),
@@ -83,8 +98,9 @@ function Checkout() {
         .filter(Boolean)
         .join(', ')
 
+      const lines = sync?.items?.length ? sync.items : cartItems
       const order = await createOrder({
-        items: cartItems.map((item) => ({
+        items: lines.map((item) => ({
           product_id: item.id,
           quantity: item.quantity,
         })),
