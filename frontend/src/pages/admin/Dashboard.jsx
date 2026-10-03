@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import StatCard from '../../components/admin/StatCard'
-import { listCustomers } from '../../services/adminService'
+import { getAdminPresence, listCustomers } from '../../services/adminService'
 import { adminListOrders } from '../../services/orderService'
 import { listProducts } from '../../services/productService'
 import './Admin.css'
@@ -29,6 +29,7 @@ function Dashboard() {
   const [orders, setOrders] = useState([])
   const [products, setProducts] = useState([])
   const [customers, setCustomers] = useState([])
+  const [presence, setPresence] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -36,14 +37,17 @@ function Dashboard() {
     setLoading(true)
     setError('')
     try {
-      const [ordersData, productsData, customersData] = await Promise.all([
-        adminListOrders({ limit: 100 }),
-        listProducts({ includeInactive: true, limit: 100 }),
-        listCustomers({ limit: 200 }),
-      ])
+      const [ordersData, productsData, customersData, presenceData] =
+        await Promise.all([
+          adminListOrders({ limit: 100 }),
+          listProducts({ includeInactive: true, limit: 100 }),
+          listCustomers({ limit: 200 }),
+          getAdminPresence().catch(() => null),
+        ])
       setOrders(ordersData || [])
       setProducts(productsData || [])
       setCustomers(customersData || [])
+      setPresence(presenceData)
     } catch (err) {
       setError(err.message || 'Failed to load dashboard')
     } finally {
@@ -54,6 +58,24 @@ function Dashboard() {
   useEffect(() => {
     load()
   }, [load])
+
+  // Poll presence every 15s for near real-time online count
+  useEffect(() => {
+    let cancelled = false
+    const tick = async () => {
+      try {
+        const data = await getAdminPresence()
+        if (!cancelled) setPresence(data)
+      } catch {
+        /* ignore */
+      }
+    }
+    const id = setInterval(tick, 15_000)
+    return () => {
+      cancelled = true
+      clearInterval(id)
+    }
+  }, [])
 
   const stats = useMemo(() => {
     const orderCount = orders.length
@@ -92,6 +114,20 @@ function Dashboard() {
 
       <div className="admin-dashboard__stats">
         <StatCard
+          title="Online now"
+          value={
+            presence == null
+              ? '…'
+              : String(presence.online_total ?? 0)
+          }
+          description={
+            presence
+              ? `${presence.online_logged_in || 0} logged in · ${presence.online_guests || 0} guests (last ${presence.ttl_seconds || 90}s)`
+              : 'People currently on the site'
+          }
+          icon="●"
+        />
+        <StatCard
           title="Orders"
           value={loading ? '…' : String(stats.orderCount)}
           description="Orders received"
@@ -116,6 +152,41 @@ function Dashboard() {
           icon="♙"
         />
       </div>
+
+      {presence?.recent?.length > 0 && (
+        <section className="admin-dashboard__section">
+          <div className="admin-dashboard__section-header">
+            <div>
+              <span>Live</span>
+              <h2>Recent activity on site</h2>
+            </div>
+          </div>
+          <div className="admin-dashboard__presence">
+            <table className="admin-dashboard__presence-table">
+              <thead>
+                <tr>
+                  <th>Visitor</th>
+                  <th>User</th>
+                  <th>Page</th>
+                  <th>Last seen</th>
+                </tr>
+              </thead>
+              <tbody>
+                {presence.recent.map((row, idx) => (
+                  <tr key={`${row.visitor_id}-${idx}`}>
+                    <td>{row.visitor_id}</td>
+                    <td>
+                      {row.user_id != null ? `User #${row.user_id}` : 'Guest'}
+                    </td>
+                    <td>{row.path || '—'}</td>
+                    <td>{row.seconds_ago}s ago</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
 
       <section className="admin-dashboard__section">
         <div className="admin-dashboard__section-header">
