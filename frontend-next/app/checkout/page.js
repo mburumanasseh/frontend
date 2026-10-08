@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useCart } from '../../context/CartContext'
 import { createOrder } from '../../lib/clientApi'
 import calculateDeliveryFee from '../../lib/delivery'
+import './checkout.css'
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -36,49 +37,60 @@ export default function CheckoutPage() {
 
   const deliveryFee = calculateDeliveryFee(formData.town)
   const total = cartSubtotal + deliveryFee
-  const hasAccount = Boolean(isAuthenticated && currentUser)
+  const hasAccountDetails = Boolean(isAuthenticated && currentUser)
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((d) => ({ ...d, [name]: value }))
-    setErrors((err) => ({ ...err, [name]: '' }))
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setFormData((currentData) => ({
+      ...currentData,
+      [name]: value,
+    }))
+    setErrors((currentErrors) => ({
+      ...currentErrors,
+      [name]: '',
+    }))
   }
 
-  const validate = () => {
-    const next = {}
-    if (!formData.fullName.trim()) next.fullName = 'Required'
-    if (!formData.phone.trim()) next.phone = 'Required'
-    if (!formData.county.trim()) next.county = 'Required'
-    if (!formData.town.trim()) next.town = 'Required'
-    if (!formData.address.trim()) next.address = 'Required'
-    setErrors(next)
-    return Object.keys(next).length === 0
+  const validateForm = () => {
+    const newErrors = {}
+    if (!formData.fullName.trim()) newErrors.fullName = 'Please enter your full name.'
+    if (!formData.phone.trim()) newErrors.phone = 'Please enter your phone number.'
+    if (!formData.county.trim()) newErrors.county = 'Please enter your county.'
+    if (!formData.town.trim()) newErrors.town = 'Please enter your town or area.'
+    if (!formData.address.trim()) newErrors.address = 'Please enter your delivery address.'
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async (event) => {
+    event.preventDefault()
     setSubmitError('')
-    if (!validate()) return
+
+    if (!validateForm()) return
+
     if (!isAuthenticated) {
+      setSubmitError('Please log in before placing an order.')
       router.push('/login?next=/checkout')
       return
     }
+
     setIsSubmitting(true)
     try {
       const sync = await refreshCartFromServer()
       if (sync?.removed?.length) {
         setSubmitError(
-          'Some items are unavailable and were removed. Review your cart and try again.',
+          'Some items are no longer available and were removed from your cart. Please review and try again.',
         )
         setIsSubmitting(false)
         return
       }
-      const lines = sync?.items?.length ? sync.items : cartItems
-      if (!lines.length) {
-        setSubmitError('Your cart is empty.')
+      if (sync?.items !== undefined && sync.items.length === 0) {
+        setSubmitError('Your cart is empty after updating stock. Please add products again.')
         setIsSubmitting(false)
         return
       }
+
+      const lines = sync?.items?.length ? sync.items : cartItems
       const shippingAddress = [
         formData.address.trim(),
         formData.town.trim(),
@@ -95,8 +107,9 @@ export default function CheckoutPage() {
         shipping_name: formData.fullName.trim(),
         shipping_phone: formData.phone.trim(),
         shipping_address: shippingAddress,
-        notes: `Delivery: ${formData.town}, ${formData.county}. Fee KSh ${deliveryFee}`,
+        notes: `Delivery: ${formData.town.trim()}, ${formData.county.trim()}. Fee KSh ${deliveryFee}`,
       })
+
       clearCart()
       setOrderSuccess(order)
     } catch (err) {
@@ -106,129 +119,235 @@ export default function CheckoutPage() {
     }
   }
 
-  if (authLoading) return <p>Loading…</p>
-
-  if (orderSuccess) {
+  if (authLoading) {
     return (
-      <div>
-        <h1>Order placed</h1>
-        <p className="success">
-          Order #{orderSuccess.id} is <strong>{orderSuccess.status}</strong>.
-          No online payment required yet — we will follow up about delivery.
-        </p>
-        <p>
-          Total: KSh {Number(orderSuccess.total_amount).toLocaleString()}
-        </p>
-        <Link href="/shop" className="btn-primary">
-          Continue shopping
-        </Link>
-      </div>
+      <main className="checkout">
+        <div className="container checkout__empty">
+          <p>Loading…</p>
+        </div>
+      </main>
     )
   }
 
-  if (!cartItems.length) {
+  if (orderSuccess) {
     return (
-      <div>
-        <h1>Checkout</h1>
-        <p className="muted">Your cart is empty.</p>
-        <Link href="/shop">Browse honey</Link>
-      </div>
+      <main className="checkout">
+        <div className="container checkout__empty">
+          <h1>Order placed</h1>
+          <p>
+            Thank you. Your order #{orderSuccess.id} was received and is{' '}
+            <strong>{orderSuccess.status}</strong>. You do not need to pay online
+            yet — we will follow up about delivery and payment.
+          </p>
+          <p>
+            Total: KSh {Number(orderSuccess.total_amount).toLocaleString()}
+          </p>
+          <Link href="/shop" className="checkout__shop-button">
+            Continue shopping
+          </Link>
+        </div>
+      </main>
+    )
+  }
+
+  if (cartItems.length === 0) {
+    return (
+      <main className="checkout">
+        <div className="container checkout__empty">
+          <h1>Your Cart Is Empty</h1>
+          <p>Add some honey to your cart before proceeding to checkout.</p>
+          <Link href="/shop" className="checkout__shop-button">
+            Browse Honey
+          </Link>
+        </div>
+      </main>
     )
   }
 
   return (
-    <div className="container page">
-      <h1>Checkout</h1>
-      <p className="muted">
-        {hasAccount
-          ? 'We filled name and phone from your account — add delivery details.'
-          : 'Log in required to place an order.'}
-      </p>
-      {!isAuthenticated && (
-        <p className="note">
-          <Link href="/login?next=/checkout">Log in</Link> or{' '}
-          <Link href="/register">create an account</Link> to continue.
-        </p>
-      )}
-
-      <form className="checkout-grid" onSubmit={handleSubmit}>
-        <div>
-          {submitError && <p className="error">{submitError}</p>}
-          {hasAccount && (
-            <p className="note">
-              Signed in as <strong>{currentUser.email}</strong>
-            </p>
-          )}
-          <div className="form">
-            <label>
-              Full name
-              <input
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                readOnly={hasAccount && Boolean(currentUser?.name)}
-              />
-              {errors.fullName && <small className="error">{errors.fullName}</small>}
-            </label>
-            <label>
-              Phone
-              <input
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                readOnly={hasAccount && Boolean(currentUser?.phone)}
-              />
-              {errors.phone && <small className="error">{errors.phone}</small>}
-            </label>
-            <label>
-              County
-              <input name="county" value={formData.county} onChange={handleChange} />
-              {errors.county && <small className="error">{errors.county}</small>}
-            </label>
-            <label>
-              Town / area
-              <input name="town" value={formData.town} onChange={handleChange} />
-              {errors.town && <small className="error">{errors.town}</small>}
-            </label>
-            <label>
-              Delivery address
-              <textarea
-                name="address"
-                rows={3}
-                value={formData.address}
-                onChange={handleChange}
-              />
-              {errors.address && <small className="error">{errors.address}</small>}
-            </label>
-            <div className="note">
-              <strong>No payment required now.</strong> Place your order and we
-              will confirm delivery and payment (including M-Pesa when available).
-            </div>
-            <button
-              type="submit"
-              className="btn-primary"
-              disabled={isSubmitting || !isAuthenticated}
-            >
-              {isSubmitting ? 'Placing order…' : 'Place order'}
-            </button>
-          </div>
+    <main className="checkout">
+      <div className="container">
+        <div className="checkout__header">
+          <span>Almost There</span>
+          <h1>Checkout</h1>
+          <p>
+            {hasAccountDetails
+              ? 'We filled in your account details — just add where to deliver.'
+              : "Tell us where you'd like your honey delivered."}
+          </p>
         </div>
 
-        <aside className="summary-box">
-          <h2>Order summary</h2>
-          {cartItems.map((item) => (
-            <p key={item.id}>
-              {item.name} × {item.quantity} — KSh{' '}
-              {(Number(item.price) * item.quantity).toLocaleString()}
-            </p>
-          ))}
-          <p>Subtotal: KSh {Number(cartSubtotal).toLocaleString()}</p>
-          <p>Delivery: KSh {Number(deliveryFee).toLocaleString()}</p>
-          <p>
-            <strong>Total: KSh {Number(total).toLocaleString()}</strong>
-          </p>
-        </aside>
-      </form>
-    </div>
+        <form className="checkout__content" onSubmit={handleSubmit}>
+          <section className="checkout__form-section">
+            <div className="checkout__card">
+              <h2>Delivery details</h2>
+              {submitError && (
+                <p className="checkout__error" role="alert">
+                  {submitError}
+                </p>
+              )}
+
+              {!isAuthenticated && (
+                <p className="checkout__account-note">
+                  Please{' '}
+                  <Link href="/login?next=/checkout">log in</Link> or{' '}
+                  <Link href="/register">create an account</Link> to place an
+                  order.
+                </p>
+              )}
+
+              {hasAccountDetails && (
+                <p className="checkout__account-note">
+                  Signed in as <strong>{currentUser.email}</strong>. Name and
+                  phone come from your account
+                  {currentUser.phone ? '' : ' (add a phone if missing)'}.
+                </p>
+              )}
+
+              <div className="checkout__fields">
+                <div className="checkout__field">
+                  <label htmlFor="fullName">Full name</label>
+                  <input
+                    id="fullName"
+                    name="fullName"
+                    type="text"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    readOnly={hasAccountDetails && Boolean(currentUser?.name)}
+                    className={
+                      hasAccountDetails && currentUser?.name
+                        ? 'checkout__input--filled'
+                        : undefined
+                    }
+                    placeholder="Your full name"
+                    autoComplete="name"
+                  />
+                  {errors.fullName && <small>{errors.fullName}</small>}
+                </div>
+
+                <div className="checkout__field">
+                  <label htmlFor="phone">Phone number</label>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    readOnly={hasAccountDetails && Boolean(currentUser?.phone)}
+                    className={
+                      hasAccountDetails && currentUser?.phone
+                        ? 'checkout__input--filled'
+                        : undefined
+                    }
+                    placeholder="07XX XXX XXX"
+                    autoComplete="tel"
+                  />
+                  {errors.phone && <small>{errors.phone}</small>}
+                </div>
+
+                <div className="checkout__field">
+                  <label htmlFor="county">County</label>
+                  <input
+                    id="county"
+                    name="county"
+                    type="text"
+                    value={formData.county}
+                    onChange={handleChange}
+                    placeholder="e.g. Nairobi"
+                    autoComplete="address-level1"
+                  />
+                  {errors.county && <small>{errors.county}</small>}
+                </div>
+
+                <div className="checkout__field">
+                  <label htmlFor="town">Town / Area</label>
+                  <input
+                    id="town"
+                    name="town"
+                    type="text"
+                    value={formData.town}
+                    onChange={handleChange}
+                    placeholder="e.g. Westlands"
+                    autoComplete="address-level2"
+                  />
+                  {errors.town && <small>{errors.town}</small>}
+                </div>
+
+                <div className="checkout__field checkout__field--full">
+                  <label htmlFor="address">Delivery address</label>
+                  <textarea
+                    id="address"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    placeholder="Street, building, landmark…"
+                    rows={4}
+                    autoComplete="street-address"
+                  />
+                  {errors.address && <small>{errors.address}</small>}
+                </div>
+              </div>
+
+              <div className="checkout__pay-later">
+                <p>
+                  <strong>No payment required now.</strong> Place your order and
+                  we will confirm delivery and payment details with you
+                  (including M-Pesa when available).
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                className="checkout__submit"
+                disabled={isSubmitting || !isAuthenticated}
+              >
+                {isSubmitting ? 'Placing order…' : 'Place order'}
+              </button>
+
+              <Link href="/cart" className="checkout__back">
+                ← Back to cart
+              </Link>
+            </div>
+          </section>
+
+          <aside className="checkout__summary">
+            <div className="checkout__card">
+              <h2>Order summary</h2>
+              <div className="checkout__items">
+                {cartItems.map((item) => (
+                  <div className="checkout__item" key={item.id}>
+                    <div>
+                      <strong>{item.name}</strong>
+                      <span>
+                        {item.quantity} × KSh{' '}
+                        {Number(item.price).toLocaleString()}
+                      </span>
+                    </div>
+                    <strong>
+                      KSh{' '}
+                      {(Number(item.price) * item.quantity).toLocaleString()}
+                    </strong>
+                  </div>
+                ))}
+              </div>
+              <div className="checkout__totals">
+                <div className="checkout__summary-row">
+                  <span>Subtotal</span>
+                  <strong>KSh {Number(cartSubtotal).toLocaleString()}</strong>
+                </div>
+                <div className="checkout__summary-row">
+                  <span>Delivery</span>
+                  <strong>KSh {Number(deliveryFee).toLocaleString()}</strong>
+                </div>
+                <div className="checkout__summary-total">
+                  <span>Total</span>
+                  <strong>KSh {Number(total).toLocaleString()}</strong>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </form>
+      </div>
+    </main>
   )
 }
