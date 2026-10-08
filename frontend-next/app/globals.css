@@ -259,3 +259,100 @@ button.linkish {
   padding: 0;
   text-decoration: underline;
 }
+
+
+.hero-block {
+  display: grid;
+  gap: 1.75rem;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  padding: 1rem 0 1.5rem;
+}
+
+@media (min-width: 800px) {
+  .hero-block {
+    grid-template-columns: 1.2fr 1fr;
+    gap: 2rem;
+  }
+}
+
+.hero-block__eyebrow {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  margin-bottom: 0.5rem;
+}
+
+.hero-block h1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  line-height: 1.2;
+  margin: 0 0 0.75rem;
+}
+
+.hero-block p {
+  color: var(--muted);
+  max-width: 34rem;
+  margin: 0 0 1.25rem;
+}
+
+.hero-block__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.hero-block__image img {
+  width: 100%;
+  max-height: 340px;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+
+.btn-secondary {
+  display: inline-block;
+  padding: 0.65rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid var(--gold);
+  color: var(--gold-dark);
+  font-weight: 600;
+  background: transparent;
+}
+
+.btn-secondary:hover {
+  background: #fff8e8;
+  text-decoration: none;
+}
+
+.featured-section {
+  padding-top: 0.5rem;
+}
+
+.featured-section__header {
+  margin-bottom: 1rem;
+}
+
+.featured-section__header span {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+}
+
+.featured-section__header h2 {
+  margin: 0.35rem 0;
+}
+
+.featured-section__header p {
+  color: var(--muted);
+  max-width: 36rem;
+}
+
+.featured-section__more {
+  margin-top: 1.5rem;
+  text-align: center;
+}

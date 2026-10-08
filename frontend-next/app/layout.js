@@ -1,6 +1,7 @@
 import './globals.css'
 import Providers from '../components/Providers'
 import Header from '../components/Header'
+import PresenceHeartbeat from '../components/PresenceHeartbeat'
 
 export const metadata = {
   title: {
@@ -17,6 +18,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <Providers>
+          <PresenceHeartbeat />
           <Header />
           <main className="site-main">{children}</main>
           <footer className="site-footer">
