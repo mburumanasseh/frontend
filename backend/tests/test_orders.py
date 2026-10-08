@@ -1,14 +1,20 @@
-def test_create_order_requires_auth(client, sample_product):
+def test_create_order_allows_guest(client, sample_product, db):
     response = client.post(
         "/api/v1/orders",
         json={
             "items": [{"product_id": sample_product.id, "quantity": 1}],
-            "shipping_name": "Buyer",
+            "shipping_name": "Guest Buyer",
             "shipping_phone": "0700111222",
             "shipping_address": "Nairobi",
         },
     )
-    assert response.status_code == 401
+    assert response.status_code == 201, response.text
+    data = response.json()
+    assert data["status"] == "pending"
+    assert data.get("user_id") is None
+    db.refresh(sample_product)
+    assert sample_product.stock == 9
+
 
 
 def test_create_order_success(client, user_payload, sample_product, db):

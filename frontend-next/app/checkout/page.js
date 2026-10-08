@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useAuth } from '../../context/AuthContext'
 import { useCart } from '../../context/CartContext'
 import { createOrder } from '../../lib/clientApi'
@@ -10,7 +9,6 @@ import calculateDeliveryFee from '../../lib/delivery'
 import './checkout.css'
 
 export default function CheckoutPage() {
-  const router = useRouter()
   const { isAuthenticated, currentUser, loading: authLoading } = useAuth()
   const { cartItems, cartSubtotal, clearCart, refreshCartFromServer } = useCart()
 
@@ -67,12 +65,6 @@ export default function CheckoutPage() {
     setSubmitError('')
 
     if (!validateForm()) return
-
-    if (!isAuthenticated) {
-      setSubmitError('Please log in before placing an order.')
-      router.push('/login?next=/checkout')
-      return
-    }
 
     setIsSubmitting(true)
     try {
@@ -173,7 +165,7 @@ export default function CheckoutPage() {
           <p>
             {hasAccountDetails
               ? 'We filled in your account details — just add where to deliver.'
-              : "Tell us where you'd like your honey delivered."}
+              : "Enter your details — no account required."}
           </p>
         </div>
 
@@ -189,10 +181,10 @@ export default function CheckoutPage() {
 
               {!isAuthenticated && (
                 <p className="checkout__account-note">
-                  Please{' '}
+                  You can order as a guest. Optional:{' '}
                   <Link href="/login?next=/checkout">log in</Link> or{' '}
-                  <Link href="/register">create an account</Link> to place an
-                  order.
+                  <Link href="/register">create an account</Link> to save your
+                  details for next time.
                 </p>
               )}
 
@@ -299,7 +291,7 @@ export default function CheckoutPage() {
               <button
                 type="submit"
                 className="checkout__submit"
-                disabled={isSubmitting || !isAuthenticated}
+                disabled={isSubmitting}
               >
                 {isSubmitting ? 'Placing order…' : 'Place order'}
               </button>

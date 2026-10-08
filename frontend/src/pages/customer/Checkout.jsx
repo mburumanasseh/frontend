@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useCart } from '../../context/useCart'
 import { useAuth } from '../../context/useAuth'
 import calculateDeliveryFee from '../../services/deliveryService'
@@ -7,7 +7,6 @@ import { createOrder } from '../../services/orderService'
 import './Checkout.css'
 
 function Checkout() {
-  const navigate = useNavigate()
   const { cartItems, cartSubtotal, clearCart, refreshCartFromServer } = useCart()
   const { isAuthenticated, currentUser } = useAuth()
 
@@ -66,12 +65,6 @@ function Checkout() {
     setSubmitError('')
 
     if (!validateForm()) return
-
-    if (!isAuthenticated) {
-      setSubmitError('Please log in before placing an order.')
-      navigate('/login', { state: { from: '/checkout' } })
-      return
-    }
 
     setIsSubmitting(true)
     try {
@@ -163,7 +156,7 @@ function Checkout() {
           <p>
             {hasAccountDetails
               ? 'We filled in your account details — just add where to deliver.'
-              : "Tell us where you'd like your honey delivered."}
+              : "Enter your details — no account required."}
           </p>
         </div>
 
@@ -174,6 +167,15 @@ function Checkout() {
               {submitError && (
                 <p className="checkout__error" role="alert">
                   {submitError}
+                </p>
+              )}
+
+              {!isAuthenticated && (
+                <p className="checkout__account-note">
+                  You can order as a guest. Optional:{' '}
+                  <Link to="/login">log in</Link> or{' '}
+                  <Link to="/register">create an account</Link> to save your
+                  details for next time.
                 </p>
               )}
 
