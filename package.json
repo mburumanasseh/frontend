@@ -2,12 +2,15 @@
   "name": "honey-shop",
   "version": "0.1.0",
   "private": true,
-  "description": "Honey Shop monorepo – frontend + backend",
+  "description": "Mercy Gold Honey monorepo \u2013 Vite frontend (prod), Next.js (WIP), FastAPI backend",
   "scripts": {
     "dev": "npm run dev --prefix frontend",
     "build": "npm run build --prefix frontend",
     "lint": "npm run lint --prefix frontend",
-    "preview": "npm run preview --prefix frontend"
+    "preview": "npm run preview --prefix frontend",
+    "dev:vite": "npm run dev --prefix frontend",
+    "dev:next": "npm run dev --prefix frontend-next",
+    "build:next": "npm run build --prefix frontend-next"
   },
   "engines": {
     "node": ">=18"

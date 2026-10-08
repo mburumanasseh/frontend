@@ -15,9 +15,10 @@ Monorepo for **Mercy Gold Honey** — a Kenyan honey e-commerce platform.
 
 ```text
 honey-shop/
-├── frontend/          # Customer storefront + admin panel
+├── frontend/          # Production Vite storefront + admin
+├── frontend-next/     # WIP Next.js storefront (SEO)
 ├── backend/           # REST API
-├── vercel.json        # Vercel monorepo build + SPA rewrites
+├── vercel.json        # Production: builds frontend/ (Vite)
 ├── package.json       # Root metadata
 └── .trackers/         # Engineer Mode task state
 ```
@@ -127,3 +128,27 @@ This repo follows Engineer Mode (topic branches + PRs). See `.trackers/` when pr
 - Order confirmation emails
 - Custom domain
 - Frontend automated tests
+
+## Branch & frontend strategy
+
+| Path | Role |
+|------|------|
+| `frontend/` | **Production** React + Vite storefront (what Vercel deploys from `main`) |
+| `frontend-next/` | **WIP** Next.js App Router storefront (SEO) — develop on `dev` |
+| `backend/` | FastAPI API (Render) — shared by both frontends |
+
+### Branches
+
+| Branch | Purpose |
+|--------|---------|
+| `main` | Production. Vercel builds **`frontend/`** only (`vercel.json`). |
+| `dev` | Integration branch for Next.js work and experiments. |
+| `feat/*` | Feature branches → merge into **`dev`** first; promote to **`main`** when ready for production. |
+
+Until Next cutover: **`main` keeps deploying the Vite app.**  
+When Next is ready: change Vercel root/build to `frontend-next` (or swap `vercel.json`) and ship from `main`.
+
+### Vercel preview (Next.js WIP)
+
+Production stays on Vite. For a Next preview, create a **second** Vercel project with Root Directory \`frontend-next\` and Production Branch \`dev\`. Steps: \`frontend-next/VERCEL.md\`.
+
