@@ -18,3 +18,8 @@ export async function updateStoreSettings(payload) {
     body: JSON.stringify(payload),
   })
 }
+
+
+export async function getAdminPresence() {
+  return apiRequest('/api/v1/admin/presence')
+}

@@ -25,10 +25,12 @@ import Inventory from '../pages/admin/Inventory'
 import Payments from '../pages/admin/Payments'
 import Settings from '../pages/admin/Settings'
 import ProtectedAdminRoute from './ProtectedAdminRoute'
+import PresenceHeartbeat from '../components/PresenceHeartbeat'
 
 function AppRoutes() {
   return (
     <BrowserRouter>
+      <PresenceHeartbeat />
       <Routes>
         {/* ==================================================
             CUSTOMER STOREFRONT ROUTES
