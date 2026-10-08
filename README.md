@@ -148,3 +148,7 @@ This repo follows Engineer Mode (topic branches + PRs). See `.trackers/` when pr
 Until Next cutover: **`main` keeps deploying the Vite app.**  
 When Next is ready: change Vercel root/build to `frontend-next` (or swap `vercel.json`) and ship from `main`.
 
+### Vercel preview (Next.js WIP)
+
+Production stays on Vite. For a Next preview, create a **second** Vercel project with Root Directory \`frontend-next\` and Production Branch \`dev\`. Steps: \`frontend-next/VERCEL.md\`.
+

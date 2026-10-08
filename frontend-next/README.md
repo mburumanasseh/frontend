@@ -28,3 +28,8 @@ npm run dev
 1. Feature-complete + tested on `dev`
 2. Point Vercel at `frontend-next`
 3. Keep CORS origins updated on Render
+
+## Vercel preview
+
+See **[VERCEL.md](./VERCEL.md)** for creating a separate Vercel project with Root Directory `frontend-next` and branch `dev`.
+
