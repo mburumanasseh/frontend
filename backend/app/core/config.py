@@ -22,7 +22,7 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str = "postgresql://honey:honey@localhost:5432/honey_shop"
 
-    CORS_ORIGINS: str = "http://localhost:5173,https://frontend-snowy-two-50.vercel.app"
+    CORS_ORIGINS: str = "http://localhost:5173,https://frontend-snowy-two-50.vercel.app,https://mercygold.co.ke,https://www.mercygold.co.ke"
 
     BOOTSTRAP_SECRET: str = ""
 

@@ -4,7 +4,7 @@ Monorepo for **Mercy Gold Honey** — a Kenyan honey e-commerce platform.
 
 | Layer | Stack | Hosting |
 |-------|--------|---------|
-| **Frontend** | React 19 + Vite | [Vercel](https://frontend-snowy-two-50.vercel.app) |
+| **Frontend** | React 19 + Vite | [Vercel](https://frontend-snowy-two-50.vercel.app, https://mercygold.co.ke) |
 | **Backend** | FastAPI + SQLAlchemy + Alembic | [Render](https://honey-shop-260z.onrender.com) |
 | **Database** | PostgreSQL | Render Postgres |
 | **Images** | Cloudinary | Cloudinary |
@@ -26,7 +26,7 @@ honey-shop/
 
 | Service | URL |
 |---------|-----|
-| Storefront | https://frontend-snowy-two-50.vercel.app |
+| Storefront | https://frontend-snowy-two-50.vercel.app, https://mercygold.co.ke |
 | API | https://honey-shop-260z.onrender.com |
 | API docs | https://honey-shop-260z.onrender.com/api/v1/docs |
 | Health | https://honey-shop-260z.onrender.com/api/v1/health |
