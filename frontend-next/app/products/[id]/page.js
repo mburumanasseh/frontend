@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { getProduct, listProducts } from '../../../lib/api'
+import { getProduct, listProducts, normalizeProduct } from '../../../lib/api'
+import AddToCartButton from '../../../components/AddToCartButton'
 
 export async function generateStaticParams() {
   try {
@@ -11,11 +12,13 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
+  const id = params?.id
   try {
-    const product = await getProduct(params.id)
+    const product = await getProduct(id)
     return {
       title: product.name,
-      description: product.description || `${product.name} from Mercy Gold Honey`,
+      description:
+        product.description || `${product.name} from Mercy Gold Honey`,
     }
   } catch {
     return { title: 'Product' }
@@ -23,10 +26,11 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProductPage({ params }) {
+  const id = params?.id
   let product
   let error = null
   try {
-    product = await getProduct(params.id)
+    product = normalizeProduct(await getProduct(id))
   } catch (e) {
     error = e.message || 'Product not found'
   }
@@ -45,16 +49,27 @@ export default async function ProductPage({ params }) {
       <p>
         <Link href="/shop">← Shop</Link>
       </p>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={product.image}
+        alt={product.name}
+        style={{
+          width: '100%',
+          maxWidth: 420,
+          borderRadius: 12,
+          objectFit: 'cover',
+        }}
+      />
       <h1>{product.name}</h1>
-      {product.size && <p>{product.size}</p>}
+      {product.size && <p className="muted">{product.size}</p>}
       <p className="price">KSh {Number(product.price).toLocaleString()}</p>
+      {typeof product.stock === 'number' && (
+        <p className="muted">
+          {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+        </p>
+      )}
       {product.description && <p>{product.description}</p>}
-      <p>
-        <em>
-          Cart and checkout will be wired next — this page is SEO-ready HTML from
-          the server.
-        </em>
-      </p>
+      <AddToCartButton product={product} />
     </article>
   )
 }

@@ -1,32 +1,30 @@
 # Mercy Gold Honey — Next.js storefront (WIP)
 
-Parallel frontend for SEO (App Router, server-rendered product pages).  
-**Production still uses `../frontend` (Vite)** until cutover.
+Parallel to production Vite app in `../frontend`. Develop on branch **`dev`**.
 
-## Stack
+## Features (this scaffold)
 
-- Next.js 15 (App Router)
-- Same FastAPI backend as the Vite app
+| Area | Status |
+|------|--------|
+| Home / Shop / Product (SSR + metadata) | ✅ |
+| Cart (`localStorage` + stock refresh) | ✅ |
+| Login / Register (httpOnly cookies + eye toggle) | ✅ |
+| Checkout (prefill name/phone, pay later) | ✅ |
+| Orders / Profile | ✅ |
+| Admin panel | ❌ still on Vite `frontend/` |
 
 ## Setup
 
 ```bash
 cd frontend-next
 cp .env.example .env.local
-# set NEXT_PUBLIC_API_URL=http://localhost:8000
+# NEXT_PUBLIC_API_URL=https://honey-shop-260z.onrender.com
 npm install
 npm run dev
 ```
 
-Open http://localhost:3000
+## Production cutover (later)
 
-## Deploy note
-
-Do **not** point production `mercygold.co.ke` here until the app is feature-complete.  
-Use a Vercel **Preview** project or the `dev` branch for testing.
-
-## CORS
-
-Render `CORS_ORIGINS` must include any preview URL you use, plus:
-
-`https://mercygold.co.ke`, `https://www.mercygold.co.ke`
+1. Feature-complete + tested on `dev`
+2. Point Vercel at `frontend-next`
+3. Keep CORS origins updated on Render
