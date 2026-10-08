@@ -37,7 +37,7 @@ export default async function ProductPage({ params }) {
 
   if (error || !product) {
     return (
-      <div>
+      <div className="container page">
         <p className="error">{error || 'Product not found'}</p>
         <Link href="/shop">← Back to shop</Link>
       </div>
@@ -45,31 +45,34 @@ export default async function ProductPage({ params }) {
   }
 
   return (
-    <article>
-      <p>
+    <div className="container">
+      <p style={{ paddingTop: '1.5rem' }}>
         <Link href="/shop">← Shop</Link>
       </p>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={product.image}
-        alt={product.name}
-        style={{
-          width: '100%',
-          maxWidth: 420,
-          borderRadius: 12,
-          objectFit: 'cover',
-        }}
-      />
-      <h1>{product.name}</h1>
-      {product.size && <p className="muted">{product.size}</p>}
-      <p className="price">KSh {Number(product.price).toLocaleString()}</p>
-      {typeof product.stock === 'number' && (
-        <p className="muted">
-          {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
-        </p>
-      )}
-      {product.description && <p>{product.description}</p>}
-      <AddToCartButton product={product} />
-    </article>
+      <article className="product-detail">
+        <div className="product-detail__image">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={product.image} alt={product.name} />
+        </div>
+        <div className="product-detail__info">
+          <h1>{product.name}</h1>
+          {product.size && <p className="muted">{product.size}</p>}
+          <p className="price">KSh {Number(product.price).toLocaleString()}</p>
+          {typeof product.stock === 'number' && (
+            <p className="muted">
+              {product.stock > 0
+                ? `${product.stock} in stock`
+                : 'Out of stock'}
+            </p>
+          )}
+          {product.description && (
+            <p style={{ marginTop: '1rem', lineHeight: 1.7 }}>
+              {product.description}
+            </p>
+          )}
+          <AddToCartButton product={product} />
+        </div>
+      </article>
+    </div>
   )
 }

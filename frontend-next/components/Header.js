@@ -10,32 +10,35 @@ export default function Header() {
 
   return (
     <header className="site-header">
-      <Link href="/" className="brand">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/mercy-gold-logo.jpg"
-          alt="Mercy Gold Honey"
-          className="brand-logo"
-        />
-      </Link>
-      <nav className="site-nav">
-        <Link href="/">Home</Link>
-        <Link href="/shop">Shop</Link>
-        <Link href="/cart">
-          Cart{cartCount > 0 ? ` (${cartCount})` : ''}
+      <div className="container site-header__inner">
+        <Link href="/" className="brand" aria-label="Mercy Gold Honey home">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/mercy-gold-logo.jpg"
+            alt="Mercy Gold Honey"
+            className="brand-logo"
+          />
         </Link>
-        {isAuthenticated ? (
-          <>
-            <Link href="/orders">Orders</Link>
-            <Link href="/profile">{currentUser?.name || 'Account'}</Link>
-            <button type="button" className="linkish" onClick={() => logout()}>
-              Logout
-            </button>
-          </>
-        ) : (
-          <Link href="/login">Login</Link>
-        )}
-      </nav>
+        <nav className="site-nav" aria-label="Main">
+          <Link href="/">Home</Link>
+          <Link href="/shop">Shop</Link>
+          <Link href="/cart">
+            Cart
+            {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+          </Link>
+          {isAuthenticated ? (
+            <>
+              <Link href="/orders">Orders</Link>
+              <Link href="/profile">{currentUser?.name || 'Account'}</Link>
+              <button type="button" className="linkish" onClick={() => logout()}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link href="/login">Login</Link>
+          )}
+        </nav>
+      </div>
     </header>
   )
 }

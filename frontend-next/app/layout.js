@@ -22,7 +22,9 @@ export default function RootLayout({ children }) {
           <Header />
           <main className="site-main">{children}</main>
           <footer className="site-footer">
-            <p>© {new Date().getFullYear()} Mercy Gold Honey</p>
+            <div className="container">
+              <p>© {new Date().getFullYear()} Mercy Gold Honey · Pure. Natural. Kenyan.</p>
+            </div>
           </footer>
         </Providers>
       </body>

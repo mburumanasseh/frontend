@@ -50,7 +50,7 @@ export default function CartPage() {
   }
 
   return (
-    <div>
+    <div className="container page">
       <h1>Your cart</h1>
       {isRefreshing && <p className="muted">Updating prices and stock…</p>}
       {notice && <p className="note">{notice}</p>}

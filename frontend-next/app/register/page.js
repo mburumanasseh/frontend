@@ -51,7 +51,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div>
+    <div className="container page">
       <h1>Create account</h1>
       {error && <p className="error">{error}</p>}
       <form className="form" onSubmit={handleSubmit}>

@@ -37,7 +37,7 @@ export default function OrdersPage() {
   }
 
   return (
-    <div>
+    <div className="container page">
       <h1>My orders</h1>
       {error && <p className="error">{error}</p>}
       {!orders.length && <p className="muted">No orders yet.</p>}

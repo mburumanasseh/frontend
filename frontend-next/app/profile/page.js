@@ -20,7 +20,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div>
+    <div className="container page">
       <h1>Profile</h1>
       <p>
         <strong>Name:</strong> {currentUser.name}

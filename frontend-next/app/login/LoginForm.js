@@ -30,7 +30,7 @@ export default function LoginForm() {
   }
 
   return (
-    <div>
+    <div className="container page">
       <h1>Login</h1>
       <p className="muted">Sign in to your Mercy Gold Honey account.</p>
       {error && <p className="error">{error}</p>}
