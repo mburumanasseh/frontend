@@ -13,10 +13,11 @@ export const metadata = {
   metadataBase: new URL('https://mercygold.co.ke'),
   icons: {
     icon: [
+      { url: '/brand-icon.png', type: 'image/png', sizes: '256x256' },
+      { url: '/brand-icon-32.png', type: 'image/png', sizes: '32x32' },
       { url: '/favicon.ico', sizes: 'any' },
-      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
+    shortcut: '/brand-icon-32.png',
     apple: [{ url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }],
   },
 }
