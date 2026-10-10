@@ -25,6 +25,7 @@ class OrderCreate(BaseModel):
     shipping_name: str = Field(..., min_length=2, max_length=120)
     shipping_phone: str = Field(..., min_length=7, max_length=30)
     shipping_address: str = Field(..., min_length=5)
+    shipping_email: Optional[str] = Field(None, max_length=255)
     notes: Optional[str] = None
 
 
@@ -47,6 +48,7 @@ class OrderResponse(BaseModel):
     shipping_name: str
     shipping_phone: str
     shipping_address: str
+    shipping_email: Optional[str] = None
     notes: Optional[str] = None
     items: List[OrderItemResponse]
     created_at: datetime
