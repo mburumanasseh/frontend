@@ -14,6 +14,8 @@ import Login from '../pages/customer/Login'
 import Register from '../pages/customer/Register'
 import Profile from '../pages/customer/Profile'
 import MyOrders from '../pages/customer/MyOrders'
+import About from '../pages/customer/About'
+import Faq from '../pages/customer/Faq'
 
 // Admin pages
 import Dashboard from '../pages/admin/Dashboard'
@@ -50,6 +52,16 @@ function AppRoutes() {
           <Route
             path="shop"
             element={<Shop />}
+          />
+
+          <Route
+            path="about"
+            element={<About />}
+          />
+
+          <Route
+            path="faq"
+            element={<Faq />}
           />
 
           {/* Product Details */}

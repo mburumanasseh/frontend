@@ -796,3 +796,207 @@ button.linkish {
   margin-top: auto;
   width: 100%;
 }
+
+
+/* ===== WhatsApp floating button ===== */
+.whatsapp-float {
+  position: fixed;
+  right: 20px;
+  bottom: 24px;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 16px 0 14px;
+  border-radius: 999px;
+  color: #fff;
+  background: #25d366;
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.35);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.whatsapp-float:hover {
+  color: #fff;
+  background: #1ebe57;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(37, 211, 102, 0.4);
+}
+.whatsapp-float__icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+.whatsapp-float__label {
+  line-height: 1;
+}
+@media (max-width: 480px) {
+  .whatsapp-float {
+    right: 14px;
+    bottom: 16px;
+    padding: 0 14px 0 12px;
+    min-height: 48px;
+  }
+}
+
+/* ===== About ===== */
+.about {
+  padding: 64px 0 80px;
+}
+.about__content {
+  max-width: 720px;
+}
+.about__eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--color-primary, #b7791f);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.about h1 {
+  margin-bottom: 1.25rem;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+}
+.about p {
+  margin-bottom: 1rem;
+  color: var(--color-text-muted, #6b625c);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+.about__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 1.75rem;
+}
+.about__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-primary, #b7791f);
+  text-decoration: none;
+}
+.about__button:hover {
+  background: var(--color-primary-dark, #8c5a16);
+  color: #fff;
+}
+.about__button--secondary {
+  color: var(--color-primary-dark, #8c5a16);
+  background: transparent;
+  border: 1px solid var(--color-primary, #b7791f);
+}
+.about__button--secondary:hover {
+  color: #fff;
+  background: var(--color-primary, #b7791f);
+}
+
+/* ===== FAQ ===== */
+.faq {
+  padding: 64px 0 80px;
+}
+.faq__content {
+  max-width: 720px;
+}
+.faq__eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--color-primary, #b7791f);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.faq h1 {
+  margin-bottom: 0.75rem;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+}
+.faq__intro {
+  margin-bottom: 1.75rem;
+  color: var(--color-text-muted, #6b625c);
+  font-size: 1.05rem;
+}
+.faq__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.faq__item {
+  border: 1px solid var(--color-border, #e8dfd2);
+  border-radius: 12px;
+  background: var(--color-surface, #fff);
+  padding: 0.85rem 1rem;
+}
+.faq__item summary {
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+}
+.faq__item summary::-webkit-details-marker {
+  display: none;
+}
+.faq__item p {
+  margin-top: 0.75rem;
+  color: var(--color-text-muted, #6b625c);
+  line-height: 1.6;
+}
+.faq__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 1.75rem;
+}
+.faq__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-primary, #b7791f);
+  text-decoration: none;
+}
+.faq__button:hover {
+  background: var(--color-primary-dark, #8c5a16);
+  color: #fff;
+}
+.faq__button--secondary {
+  color: var(--color-primary-dark, #8c5a16);
+  background: transparent;
+  border: 1px solid var(--color-primary, #b7791f);
+}
+.faq__button--secondary:hover {
+  color: #fff;
+  background: var(--color-primary, #b7791f);
+}
+
+/* Footer links */
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.site-footer__links {
+  display: flex;
+  gap: 16px;
+}
+.site-footer__links a {
+  color: var(--color-text-muted, #6b625c);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.site-footer__links a:hover {
+  color: var(--color-primary, #b7791f);
+}
