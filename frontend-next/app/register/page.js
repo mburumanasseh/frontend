@@ -51,73 +51,105 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="container page">
-      <h1>Create account</h1>
-      {error && <p className="error">{error}</p>}
-      <form className="form" onSubmit={handleSubmit}>
-        <label>
-          Name
-          <input name="name" value={form.name} onChange={handleChange} required />
-        </label>
-        <label>
-          Email
-          <input
-            name="email"
-            type="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <label>
-          Phone
-          <input name="phone" type="tel" value={form.phone} onChange={handleChange} />
-        </label>
-        <label>
-          Password
-          <div className="password-wrap">
+    <div className="container page auth-page">
+      <div className="auth-card">
+        <div className="auth-card__header">
+          <span className="page-eyebrow">Join Us</span>
+          <h1>Create account</h1>
+          <p className="muted">
+            Optional — you can also place an order as a guest without an
+            account.
+          </p>
+        </div>
+        {error && (
+          <p className="error" role="alert">
+            {error}
+          </p>
+        )}
+        <form className="form" onSubmit={handleSubmit}>
+          <label>
+            Name
             <input
-              name="password"
-              type={showPassword ? 'text' : 'password'}
-              value={form.password}
+              name="name"
+              value={form.name}
               onChange={handleChange}
+              autoComplete="name"
               required
             />
-            <button
-              type="button"
-              className="password-toggle"
-              onClick={() => setShowPassword((v) => !v)}
-            >
-              {showPassword ? '🙈' : '👁'}
-            </button>
-          </div>
-        </label>
-        <label>
-          Confirm password
-          <div className="password-wrap">
+          </label>
+          <label>
+            Email
             <input
-              name="confirmPassword"
-              type={showConfirm ? 'text' : 'password'}
-              value={form.confirmPassword}
+              name="email"
+              type="email"
+              value={form.email}
               onChange={handleChange}
+              autoComplete="email"
               required
             />
-            <button
-              type="button"
-              className="password-toggle"
-              onClick={() => setShowConfirm((v) => !v)}
-            >
-              {showConfirm ? '🙈' : '👁'}
-            </button>
-          </div>
-        </label>
-        <button type="submit" className="btn-primary" disabled={submitting}>
-          {submitting ? 'Creating…' : 'Create account'}
-        </button>
-      </form>
-      <p className="muted" style={{ marginTop: '1rem' }}>
-        Already have an account? <Link href="/login">Login</Link>
-      </p>
+          </label>
+          <label>
+            Phone
+            <input
+              name="phone"
+              type="tel"
+              value={form.phone}
+              onChange={handleChange}
+              autoComplete="tel"
+              placeholder="07XX XXX XXX"
+            />
+          </label>
+          <label>
+            Password
+            <div className="password-wrap">
+              <input
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={form.password}
+                onChange={handleChange}
+                autoComplete="new-password"
+                placeholder="At least 6 characters"
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? '🙈' : '👁'}
+              </button>
+            </div>
+          </label>
+          <label>
+            Confirm password
+            <div className="password-wrap">
+              <input
+                name="confirmPassword"
+                type={showConfirm ? 'text' : 'password'}
+                value={form.confirmPassword}
+                onChange={handleChange}
+                autoComplete="new-password"
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowConfirm((v) => !v)}
+                aria-label={showConfirm ? 'Hide password' : 'Show password'}
+              >
+                {showConfirm ? '🙈' : '👁'}
+              </button>
+            </div>
+          </label>
+          <button type="submit" className="btn-primary" disabled={submitting}>
+            {submitting ? 'Creating…' : 'Create account'}
+          </button>
+        </form>
+        <p className="auth-card__footer muted">
+          Already have an account? <Link href="/login">Login</Link>
+        </p>
+      </div>
     </div>
   )
 }

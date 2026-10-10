@@ -19,8 +19,12 @@ export default async function ShopPage() {
 
   return (
     <div className="container page">
+      <span className="page-eyebrow">Our Collection</span>
       <h1>Shop</h1>
-      <p className="muted">All available honey from Mercy Gold.</p>
+      <p className="muted">
+        All available honey from Mercy Gold. Add to cart and checkout anytime —
+        login is optional.
+      </p>
       {error && <p className="error">{error}</p>}
       <div className="product-grid">
         {products.map((p) => (
