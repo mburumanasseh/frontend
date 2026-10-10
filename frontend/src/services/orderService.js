@@ -27,6 +27,16 @@ export async function getOrder(id) {
   return apiRequest(`/api/v1/orders/${id}`)
 }
 
+export async function lookupOrder({ order_id, phone }) {
+  return apiRequest('/api/v1/orders/lookup', {
+    method: 'POST',
+    body: JSON.stringify({
+      order_id: Number(order_id),
+      phone: String(phone || '').trim(),
+    }),
+  })
+}
+
 export async function adminListOrders(options = {}) {
   const params = new URLSearchParams()
   if (options.skip != null) params.set('skip', String(options.skip))

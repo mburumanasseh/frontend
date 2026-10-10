@@ -101,6 +101,16 @@ export async function listMyOrders() {
   return apiRequest('/api/v1/orders')
 }
 
+export async function lookupOrder({ order_id, phone }) {
+  return apiRequest('/api/v1/orders/lookup', {
+    method: 'POST',
+    body: JSON.stringify({
+      order_id: Number(order_id),
+      phone: String(phone || '').trim(),
+    }),
+  })
+}
+
 export async function getProductClient(id) {
   return apiRequest(`/api/v1/products/${id}`)
 }

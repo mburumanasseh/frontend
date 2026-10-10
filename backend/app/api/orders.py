@@ -9,7 +9,13 @@ from app.db.session import get_db
 from app.models.order import Order, OrderItem
 from app.models.product import Product
 from app.models.user import User
-from app.schemas.order import ALLOWED_STATUSES, OrderCreate, OrderResponse, OrderStatusUpdate
+from app.schemas.order import (
+    ALLOWED_STATUSES,
+    OrderCreate,
+    OrderLookupRequest,
+    OrderResponse,
+    OrderStatusUpdate,
+)
 from app.services.email_service import notify_order_placed
 
 router = APIRouter(tags=["Orders"])
@@ -17,6 +23,26 @@ router = APIRouter(tags=["Orders"])
 
 def _order_query(db: Session):
     return db.query(Order).options(joinedload(Order.items))
+
+
+def _normalize_phone(value: str) -> str:
+    """Digits only, strip leading country/trunk zeros for comparison."""
+    digits = "".join(ch for ch in (value or "") if ch.isdigit())
+    # Kenya: 2547… and 07… should match on the significant tail
+    if digits.startswith("254") and len(digits) >= 12:
+        digits = digits[3:]
+    if digits.startswith("0") and len(digits) >= 10:
+        digits = digits[1:]
+    return digits
+
+
+def _phones_match(stored: str, provided: str) -> bool:
+    a = _normalize_phone(stored)
+    b = _normalize_phone(provided)
+    if not a or not b:
+        return False
+    # Compare last 9 digits (covers 7XXXXXXXX local form)
+    return a[-9:] == b[-9:] if len(a) >= 9 and len(b) >= 9 else a == b
 
 
 @router.post("/orders", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
@@ -121,6 +147,24 @@ def list_my_orders(
         .all()
     )
     return orders
+
+
+@router.post("/orders/lookup", response_model=OrderResponse)
+def lookup_order(
+    payload: OrderLookupRequest,
+    db: Annotated[Session, Depends(get_db)],
+):
+    """
+    Guest order status lookup. Requires order number + shipping phone.
+    Returns a generic 404 when either value is wrong (no order existence leak).
+    """
+    order = _order_query(db).filter(Order.id == payload.order_id).first()
+    if order is None or not _phones_match(order.shipping_phone, payload.phone):
+        raise HTTPException(
+            status_code=404,
+            detail="Order not found. Check the order number and phone used at checkout.",
+        )
+    return order
 
 
 @router.get("/orders/{order_id}", response_model=OrderResponse)

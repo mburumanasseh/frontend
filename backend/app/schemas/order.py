@@ -67,6 +67,13 @@ class OrderStatusUpdate(BaseModel):
         return status
 
 
+class OrderLookupRequest(BaseModel):
+    """Guest order lookup by order number + shipping phone."""
+
+    order_id: int = Field(..., ge=1)
+    phone: str = Field(..., min_length=7, max_length=30)
+
+
 class BootstrapAdminRequest(BaseModel):
     email: str
     secret: str

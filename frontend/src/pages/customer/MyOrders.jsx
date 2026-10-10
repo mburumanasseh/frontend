@@ -50,7 +50,11 @@ function MyOrders() {
       <main className="shop-page">
         <div className="container">
           <h1>My orders</h1>
-          <p>Please <Link to="/login">log in</Link> to see your orders.</p>
+          <p>
+            Please <Link to="/login">log in</Link> to see orders linked to your
+            account, or <Link to="/track">track a guest order</Link> with your
+            order number and phone.
+          </p>
         </div>
       </main>
     )
