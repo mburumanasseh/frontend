@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import Navbar from '../components/layout/Navbar'
+import WhatsAppButton from '../components/layout/WhatsAppButton'
 import honeycombImage from '../assets/honeycomb2.jpg'
 import './CustomerLayout.css'
 
@@ -16,6 +17,8 @@ function CustomerLayout() {
           <Outlet />
         </div>
       </main>
+
+      <WhatsAppButton />
     </>
   )
 }

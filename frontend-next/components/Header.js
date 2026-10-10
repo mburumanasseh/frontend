@@ -22,6 +22,8 @@ export default function Header() {
         <nav className="site-nav" aria-label="Main">
           <Link href="/">Home</Link>
           <Link href="/shop">Shop</Link>
+          <Link href="/about">About</Link>
+          <Link href="/faq">FAQ</Link>
           <Link href="/cart">
             Cart
             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}

@@ -27,6 +27,8 @@ function Navbar() {
         <nav className="navbar__links" aria-label="Main navigation">
           <Link to="/">Home</Link>
           <Link to="/shop">Shop</Link>
+          <Link to="/about">About</Link>
+          <Link to="/faq">FAQ</Link>
           <Link to="/cart">
             Cart
             {cartCount > 0 && (
