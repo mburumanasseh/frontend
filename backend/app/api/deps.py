@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Optional
 
 from fastapi import Cookie, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -64,3 +64,25 @@ def get_current_admin_user(
             detail="Admin privileges required",
         )
     return current_user
+
+
+def get_optional_user(
+    db: DBSession,
+    access_token: Annotated[str | None, Cookie(alias="access_token")] = None,
+) -> Optional[User]:
+    """Return the current user if a valid access cookie is present; otherwise None."""
+    if not access_token:
+        return None
+    payload = decode_token(access_token)
+    if payload is None or payload.get("type") != "access":
+        return None
+    user_id = payload.get("sub")
+    if user_id is None:
+        return None
+    try:
+        user = db.get(User, int(user_id))
+    except (TypeError, ValueError):
+        return None
+    if user is None or not user.is_active:
+        return None
+    return user

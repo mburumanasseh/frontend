@@ -41,7 +41,7 @@ class OrderItemResponse(BaseModel):
 
 class OrderResponse(BaseModel):
     id: int
-    user_id: int
+    user_id: Optional[int] = None
     status: str
     total_amount: Decimal
     shipping_name: str

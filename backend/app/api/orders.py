@@ -1,10 +1,10 @@
 from decimal import Decimal
-from typing import Annotated, List
+from typing import Annotated, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 
-from app.api.deps import get_current_active_user, get_current_admin_user
+from app.api.deps import get_current_active_user, get_current_admin_user, get_optional_user
 from app.db.session import get_db
 from app.models.order import Order, OrderItem
 from app.models.product import Product
@@ -22,10 +22,10 @@ def _order_query(db: Session):
 def create_order(
     payload: OrderCreate,
     db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    current_user: Annotated[Optional[User], Depends(get_optional_user)],
 ):
     """
-    Create an order atomically.
+    Create an order atomically. Authentication is optional (guest checkout).
 
     Product rows are locked with SELECT FOR UPDATE so concurrent checkouts
     cannot oversell the same stock units.
@@ -80,7 +80,7 @@ def create_order(
         product.stock -= item.quantity
 
     order = Order(
-        user_id=current_user.id,
+        user_id=current_user.id if current_user is not None else None,
         status="pending",
         total_amount=total.quantize(Decimal("0.01")),
         shipping_name=payload.shipping_name.strip(),
@@ -123,7 +123,7 @@ def get_order(
     order = _order_query(db).filter(Order.id == order_id).first()
     if order is None:
         raise HTTPException(status_code=404, detail="Order not found")
-    if order.user_id != current_user.id and not current_user.is_admin:
+    if (order.user_id is None or order.user_id != current_user.id) and not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Not allowed to view this order")
     return order
 
