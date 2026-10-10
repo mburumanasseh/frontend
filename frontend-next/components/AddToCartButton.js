@@ -10,7 +10,7 @@ export default function AddToCartButton({ product }) {
   const handleClick = () => {
     addToCart(product, 1)
     setAdded(true)
-    setTimeout(() => setAdded(false), 1500)
+    setTimeout(() => setAdded(false), 1600)
   }
 
   const disabled = typeof product.stock === 'number' && product.stock < 1
@@ -22,7 +22,7 @@ export default function AddToCartButton({ product }) {
       onClick={handleClick}
       disabled={disabled}
     >
-      {disabled ? 'Out of stock' : added ? 'Added ✓' : 'Add to cart'}
+      {disabled ? 'Out of stock' : added ? 'Added to cart ✓' : 'Add to cart'}
     </button>
   )
 }

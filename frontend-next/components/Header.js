@@ -35,7 +35,12 @@ export default function Header() {
               </button>
             </>
           ) : (
-            <Link href="/login">Login</Link>
+            <>
+              <Link href="/login">Login</Link>
+              <Link href="/register" className="nav-cta">
+                Register
+              </Link>
+            </>
           )}
         </nav>
       </div>

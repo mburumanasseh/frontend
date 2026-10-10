@@ -30,48 +30,63 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="container page">
-      <h1>Login</h1>
-      <p className="muted">Sign in to your Mercy Gold Honey account.</p>
-      {error && <p className="error">{error}</p>}
-      <form className="form" onSubmit={handleSubmit}>
-        <label>
-          Email
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-            required
-          />
-        </label>
-        <label>
-          Password
-          <div className="password-wrap">
+    <div className="container page auth-page">
+      <div className="auth-card">
+        <div className="auth-card__header">
+          <span className="page-eyebrow">Welcome Back</span>
+          <h1>Login</h1>
+          <p className="muted">
+            Sign in to your Mercy Gold Honey account. You can still checkout as
+            a guest without logging in.
+          </p>
+        </div>
+        {error && (
+          <p className="error" role="alert">
+            {error}
+          </p>
+        )}
+        <form className="form" onSubmit={handleSubmit}>
+          <label>
+            Email address
             <input
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              placeholder="you@example.com"
               required
             />
-            <button
-              type="button"
-              className="password-toggle"
-              onClick={() => setShowPassword((v) => !v)}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-              {showPassword ? '🙈' : '👁'}
-            </button>
-          </div>
-        </label>
-        <button type="submit" className="btn-primary" disabled={submitting}>
-          {submitting ? 'Signing in…' : 'Login'}
-        </button>
-      </form>
-      <p className="muted" style={{ marginTop: '1rem' }}>
-        No account? <Link href="/register">Create one</Link>
-      </p>
+          </label>
+          <label>
+            Password
+            <div className="password-wrap">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                placeholder="Enter your password"
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                title={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? '🙈' : '👁'}
+              </button>
+            </div>
+          </label>
+          <button type="submit" className="btn-primary" disabled={submitting}>
+            {submitting ? 'Signing in…' : 'Login'}
+          </button>
+        </form>
+        <p className="auth-card__footer muted">
+          Don&apos;t have an account? <Link href="/register">Create one</Link>
+        </p>
+      </div>
     </div>
   )
 }
