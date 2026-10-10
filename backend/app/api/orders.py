@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import Annotated, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 
 from app.api.deps import get_current_active_user, get_current_admin_user, get_optional_user
@@ -10,6 +10,7 @@ from app.models.order import Order, OrderItem
 from app.models.product import Product
 from app.models.user import User
 from app.schemas.order import ALLOWED_STATUSES, OrderCreate, OrderResponse, OrderStatusUpdate
+from app.services.email_service import notify_order_placed
 
 router = APIRouter(tags=["Orders"])
 
@@ -21,6 +22,7 @@ def _order_query(db: Session):
 @router.post("/orders", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
 def create_order(
     payload: OrderCreate,
+    background_tasks: BackgroundTasks,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[Optional[User], Depends(get_optional_user)],
 ):
@@ -79,6 +81,10 @@ def create_order(
         )
         product.stock -= item.quantity
 
+    shipping_email = (payload.shipping_email or "").strip() or None
+    if not shipping_email and current_user is not None and current_user.email:
+        shipping_email = current_user.email
+
     order = Order(
         user_id=current_user.id if current_user is not None else None,
         status="pending",
@@ -86,6 +92,7 @@ def create_order(
         shipping_name=payload.shipping_name.strip(),
         shipping_phone=payload.shipping_phone.strip(),
         shipping_address=payload.shipping_address.strip(),
+        shipping_email=shipping_email,
         notes=payload.notes.strip() if payload.notes else None,
         items=order_items,
     )
@@ -97,6 +104,8 @@ def create_order(
         raise
 
     created = _order_query(db).filter(Order.id == order.id).first()
+    # Confirm to customer + alert admin (non-blocking)
+    background_tasks.add_task(notify_order_placed, created)
     return created
 
 

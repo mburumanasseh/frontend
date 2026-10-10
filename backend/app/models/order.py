@@ -18,6 +18,7 @@ class Order(Base):
     shipping_name: Mapped[str] = mapped_column(String(120), nullable=False)
     shipping_phone: Mapped[str] = mapped_column(String(30), nullable=False)
     shipping_address: Mapped[str] = mapped_column(Text, nullable=False)
+    shipping_email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

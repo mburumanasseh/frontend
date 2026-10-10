@@ -15,6 +15,7 @@ export default function CheckoutPage() {
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
+    email: '',
     county: '',
     town: '',
     address: '',
@@ -30,6 +31,7 @@ export default function CheckoutPage() {
       ...prev,
       fullName: prev.fullName || currentUser.name || '',
       phone: prev.phone || currentUser.phone || '',
+      email: prev.email || currentUser.email || '',
     }))
   }, [currentUser])
 
@@ -99,6 +101,7 @@ export default function CheckoutPage() {
         shipping_name: formData.fullName.trim(),
         shipping_phone: formData.phone.trim(),
         shipping_address: shippingAddress,
+        shipping_email: formData.email.trim() || undefined,
         notes: `Delivery: ${formData.town.trim()}, ${formData.county.trim()}. Fee KSh ${deliveryFee}`,
       })
 
@@ -235,6 +238,28 @@ export default function CheckoutPage() {
                     autoComplete="tel"
                   />
                   {errors.phone && <small>{errors.phone}</small>}
+                </div>
+
+                <div className="checkout__field">
+                  <label htmlFor="email">Email (for order confirmation)</label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    readOnly={hasAccountDetails && Boolean(currentUser?.email)}
+                    className={
+                      hasAccountDetails && currentUser?.email
+                        ? 'checkout__input--filled'
+                        : undefined
+                    }
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                  />
+                  <small style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>
+                    Optional for guests — we use it to send your order confirmation.
+                  </small>
                 </div>
 
                 <div className="checkout__field">

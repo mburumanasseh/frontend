@@ -43,6 +43,11 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = ""
     SMTP_USE_TLS: bool = True
 
+    # Where to send new-order alerts (comma-separated ok)
+    ADMIN_NOTIFY_EMAIL: str = ""
+    # Public storefront URL used in order emails
+    STOREFRONT_URL: str = "https://mercygold.co.ke"
+
     @property
     def cors_origins_list(self) -> List[str]:
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
