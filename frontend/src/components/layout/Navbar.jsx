@@ -29,6 +29,7 @@ function Navbar() {
           <Link to="/shop">Shop</Link>
           <Link to="/about">About</Link>
           <Link to="/faq">FAQ</Link>
+          <Link to="/track">Track</Link>
           <Link to="/cart">
             Cart
             {cartCount > 0 && (

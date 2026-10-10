@@ -128,6 +128,10 @@ function Checkout() {
           <p>
             Total: KSh {Number(orderSuccess.total_amount).toLocaleString()}
           </p>
+          <p>
+            Save order #{orderSuccess.id} and the phone you used — you can{' '}
+            <Link to="/track">track this order anytime</Link> without logging in.
+          </p>
           <Link to="/shop" className="checkout__shop-button">
             Continue shopping
           </Link>

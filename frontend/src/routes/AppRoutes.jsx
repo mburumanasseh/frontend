@@ -16,6 +16,7 @@ import Profile from '../pages/customer/Profile'
 import MyOrders from '../pages/customer/MyOrders'
 import About from '../pages/customer/About'
 import Faq from '../pages/customer/Faq'
+import TrackOrder from '../pages/customer/TrackOrder'
 
 // Admin pages
 import Dashboard from '../pages/admin/Dashboard'
@@ -62,6 +63,11 @@ function AppRoutes() {
           <Route
             path="faq"
             element={<Faq />}
+          />
+
+          <Route
+            path="track"
+            element={<TrackOrder />}
           />
 
           {/* Product Details */}

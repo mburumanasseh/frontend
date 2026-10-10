@@ -24,6 +24,7 @@ export default function Header() {
           <Link href="/shop">Shop</Link>
           <Link href="/about">About</Link>
           <Link href="/faq">FAQ</Link>
+          <Link href="/track">Track</Link>
           <Link href="/cart">
             Cart
             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}

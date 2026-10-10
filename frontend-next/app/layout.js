@@ -37,6 +37,7 @@ export default function RootLayout({ children }) {
               <nav className="site-footer__links" aria-label="Footer">
                 <a href="/about">About</a>
                 <a href="/faq">FAQ</a>
+                <a href="/track">Track order</a>
                 <a href="/shop">Shop</a>
               </nav>
             </div>
